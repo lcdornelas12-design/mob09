@@ -21,7 +21,7 @@ function listar() {
     tbody.innerHTML = "";
     alunos.forEach(a => {
         tbody.innerHTML += `<tr>
-            <td>${a.id}</td><td>${a.nome}</td><td>${a.email}</td><td>${a.idade ?? "-"}</td>
+            <td>${a.id}</td><td>${a.nome}</td><td>${a.email}</td><td>${a.idade ?? "-"}</td><td>${a.apelido ?? "-"}</td>
             <td>
                 <button class="btn-acao btn-amarelo" onclick="editar(${a.id})">Editar</button>
                 <button class="btn-acao btn-vermelho" onclick="excluir(${a.id})">Excluir</button>
@@ -40,13 +40,14 @@ function salvar() {
         a.nome = n.value;
         a.email = e.value;
         a.idade = i.value;
+        a.apelido = a.value;
         idEditando = null;
         document.getElementById("btnSalvar").innerText = "Salvar";
     } else {
-        alunos.push({ id: proximoId++, nome: n.value, email: e.value, idade: i.value });
+        alunos.push({ id: proximoId++, nome: n.value, email: e.value, idade: i.value, apelido: a.value });
     }
 
-   n.value = e.value = i.value = "";
+    n.value = e.value = i.value = "" = a.value = "";
     persistir();
     listar();
 }
@@ -56,6 +57,7 @@ function editar(id) {
     document.getElementById("nome").value = a.nome;
     document.getElementById("email").value = a.email;
     document.getElementById("idade").value = a.idade || "";
+    document.getElementById("apelido").value = a.apelido || "";
     idEditando = id;
     document.getElementById("btnSalvar").innerText = "Atualizar #" + id;
 }
