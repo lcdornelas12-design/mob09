@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<!-- saved from url=(0043)https://almeida-cma.github.io/mob09/t9.html -->
+<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💾 TEMA 9: Base de Dados — Armazenamento Local, CRUD e Evolução de Esquemas</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+    background:linear-gradient(135deg,#090d16 0%,#0f172a 50%,#042f2e 100%);
+    padding:20px 14px 80px;
+    min-height:100vh;
+    color:#1e293b;
+  }
+  .container{max-width:1100px;margin:0 auto;}
+
+  /* HEADER */
+  .header{
+    background:linear-gradient(135deg,#0d9488 0%,#0284c7 50%,#3b82f6 100%);
+    border-radius:20px;padding:35px 25px;margin-bottom:25px;
+    text-align:center;color:#fff;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  .header h1{font-size:2rem;margin-bottom:8px;letter-spacing:-.5px;}
+  .header h1 span{color:#a5f3fc;}
+  .header p{opacity:.95;font-size:1rem;max-width:850px;margin:0 auto;line-height:1.6;}
+  .badge-group{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px;}
+  .badge{
+    background:rgba(255,255,255,.2);padding:5px 14px;
+    border-radius:30px;font-size:.72rem;font-weight:700;color:#fff;
+    backdrop-filter:blur(5px);
+  }
+
+  /* CARDS */
+  .card{
+    background:#fff;border-radius:20px;padding:26px;margin-bottom:22px;
+    box-shadow:0 10px 30px rgba(0,0,0,.12);
+  }
+  .card h2{
+    color:#0f766e;margin-bottom:14px;
+    border-left:5px solid #0d9488;padding-left:12px;
+    font-size:1.35rem;display:flex;align-items:center;gap:8px;
+  }
+  .card h3{
+    color:#042f2e;margin:22px 0 10px;
+    font-size:1.1rem;display:flex;align-items:center;gap:6px;
+  }
+  .card h4{color:#0f766e;margin:14px 0 6px;font-size:.98rem;}
+  .card p{color:#334155;line-height:1.75;margin-bottom:12px;font-size:.94rem;}
+  .card ul,.card ol{color:#334155;line-height:1.8;margin:8px 0 14px 25px;font-size:.94rem;}
+  .card code{
+    background:#ccfbf1;color:#115e59;padding:2px 6px;
+    border-radius:4px;font-family:'Courier New',monospace;font-size:.85rem;
+  }
+  .card pre{
+    background:#020617;color:#e2e8f0;padding:14px 16px;
+    border-radius:10px;font-family:'Courier New',monospace;
+    font-size:.8rem;line-height:1.6;overflow-x:auto;
+    margin:10px 0;white-space:pre;
+  }
+
+  /* HIGHLIGHT BOXES */
+  .highlight-box{
+    padding:14px 18px;border-radius:12px;margin:14px 0;
+    font-size:.92rem;line-height:1.7;
+  }
+  .highlight-box.teal{background:#f0fdfa;border-left:5px solid #0d9488;color:#134e4a;}
+  .highlight-box.yellow{background:#fffbe8;border-left:5px solid #f59e0b;color:#854d0e;}
+  .highlight-box.blue{background:#e0f2fe;border-left:5px solid #0284c7;color:#0369a1;}
+  .highlight-box.green{background:#dcfce7;border-left:5px solid #16a34a;color:#15803d;}
+  .highlight-box.red{background:#fee2e2;border-left:5px solid #ef4444;color:#991b1b;}
+
+  /* GRID DE CONCEITOS */
+  .conceito-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:12px;margin:18px 0;
+  }
+  .conceito-card{
+    background:#f8fafc;border:2px solid #e2e8f0;
+    border-radius:14px;padding:16px;transition:.2s;
+  }
+  .conceito-card:hover{
+    transform:translateY(-3px);border-color:#0d9488;
+    box-shadow:0 4px 15px rgba(13,148,136,.15);
+  }
+  .conceito-card .tag{
+    font-size:.68rem;font-weight:800;text-transform:uppercase;
+    margin-bottom:6px;display:block;color:#0d9488;
+  }
+  .conceito-card h4{font-size:.95rem;color:#042f2e;margin-bottom:6px;}
+  .conceito-card p{font-size:.82rem;color:#64748b;margin:0;line-height:1.5;}
+
+  /* FLUXO VISUAL */
+  .fluxo{
+    display:flex;flex-wrap:wrap;gap:8px;
+    align-items:center;justify-content:center;
+    margin:16px 0;
+  }
+  .fluxo .etapa{
+    background:linear-gradient(135deg,#0d9488,#0284c7);
+    color:white;padding:10px 16px;border-radius:10px;
+    font-size:.82rem;font-weight:700;text-align:center;
+    min-width:120px;
+  }
+  .fluxo .seta{color:#0d9488;font-size:1.4rem;font-weight:bold;}
+
+  /* TABELAS */
+  table.tabela{
+    width:100%;border-collapse:collapse;margin:14px 0;font-size:.88rem;
+  }
+  table.tabela th{
+    background:linear-gradient(135deg,#134e4a,#0f766e);
+    color:#fff;padding:11px 13px;text-align:left;font-weight:600;
+  }
+  table.tabela td{
+    padding:11px 13px;border-bottom:1px solid #e2e8f0;
+    color:#334155;vertical-align:top;
+  }
+  table.tabela tr:hover td{background:#f8fafc;}
+
+  /* QUIZ */
+  .question{
+    background:#f8fafc;border-radius:12px;padding:16px 20px;
+    margin-bottom:16px;border-left:4px solid #0d9488;
+    border-top:1px solid #e2e8f0;
+    border-right:1px solid #e2e8f0;
+    border-bottom:1px solid #e2e8f0;
+    text-align:left;
+  }
+  .question.tf{border-left-color:#0284c7;}
+  .question-header{
+    font-weight:700;color:#0f172a;margin-bottom:12px;
+    display:flex;align-items:flex-start;gap:10px;
+    font-size:.93rem;line-height:1.5;
+  }
+  .question-number{
+    background:#0d9488;color:white;width:26px;height:26px;
+    border-radius:50%;text-align:center;line-height:26px;
+    font-size:12px;font-weight:bold;flex-shrink:0;margin-top:1px;
+  }
+  .question.tf .question-number{background:#0284c7;}
+  .options{display:flex;flex-direction:column;gap:8px;}
+  .options.tf{display:grid;grid-template-columns:1fr 1fr;max-width:320px;}
+  .option{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 14px;background:white;border-radius:8px;
+    border:2px solid #e2e8f0;cursor:pointer;transition:all .2s;
+  }
+  .option:hover:not(.disabled){border-color:#0d9488;background:#f0fdfa;}
+  .option input[type="radio"]{
+    width:16px;height:16px;cursor:pointer;flex-shrink:0;accent-color:#0d9488;
+  }
+  .option label{font-size:.88rem;cursor:pointer;flex:1;line-height:1.4;color:#334155;}
+  .option.correct{border-color:#16a34a!important;background:#dcfce7!important;font-weight:bold;}
+  .option.wrong{border-color:#dc2626!important;background:#fee2e2!important;}
+  .option.disabled{cursor:default;}
+
+  .btn-grupo{
+    display:flex;gap:10px;justify-content:center;
+    margin-top:20px;flex-wrap:wrap;
+  }
+  .btn{
+    background:linear-gradient(135deg,#0d9488,#0284c7);
+    color:white;border:none;padding:12px 24px;border-radius:30px;
+    cursor:pointer;font-size:.92rem;font-weight:700;
+    transition:.2s;font-family:inherit;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(13,148,136,.35);}
+  .btn-secondary{background:#64748b;}
+
+  .result-box{
+    background:#f8fafc;border-radius:16px;padding:24px;
+    text-align:center;border:3px solid #0d9488;
+    display:none;margin-top:24px;
+  }
+  .score{font-size:3rem;font-weight:900;color:#0f766e;}
+
+  .btn-top{
+    position:fixed;bottom:20px;right:20px;
+    background:#0d9488;color:white;border:none;
+    padding:10px 18px;border-radius:50px;cursor:pointer;
+    font-size:12px;font-weight:700;
+    box-shadow:0 4px 15px rgba(0,0,0,.25);
+    font-family:inherit;z-index:100;
+  }
+
+  @media (max-width:650px){
+    .header h1{font-size:1.4rem;}
+    .card{padding:18px 14px;}
+    .fluxo .etapa{min-width:90px;font-size:.75rem;padding:8px 12px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="container" id="inicio">
+
+  <!-- HEADER -->
+  <header class="header">
+    <h1>💾 TEMA 9: Base de Dados — <span>Armazenamento Local e CRUD</span></h1>
+    <p>Domine o funcionamento interno da persistência no navegador: o ciclo de vida do LocalStorage, a serialização JSON, a arquitetura CRUD completa e as regras essenciais para adicionar campos sem quebrar sistemas legados.</p>
+    <div class="badge-group">
+      <span class="badge">💽 LocalStorage</span>
+      <span class="badge">🔄 JSON Stringify/Parse</span>
+      <span class="badge">⚙️ Ciclo CRUD</span>
+      <span class="badge">🧩 Evolução de Esquema</span>
+      <span class="badge">🛡️ Nullish Coalescing (??)</span>
+      <span class="badge">📁 I/O Blob &amp; FileReader</span>
+    </div>
+  </header>
+
+  <!-- SEÇÃO 1: O QUE É ARMAZENAMENTO LOCAL -->
+  <section class="card">
+    <h2>🗄️ 1. Memória Volátil (RAM) vs. Armazenamento Persistente</h2>
+
+    <div class="highlight-box teal">
+      💡 <strong>Conceito-chave:</strong> quando declaramos variáveis em JavaScript (como <code>let alunos = []</code>), elas existem apenas na <strong>memória RAM</strong> do navegador. Se o usuário recarrega a página (F5) ou fecha o app, todos os dados somem. O <strong>LocalStorage</strong> resolve isso gravando os dados no disco do dispositivo sob o domínio da aplicação.
+    </div>
+
+    <p>O LocalStorage é um banco de dados embutido do tipo <strong>Chave-Valor (Key-Value)</strong> presente em todos os navegadores modernos e WebViews móveis. Ele mantém as informações guardadas mesmo que o aparelho seja desligado.</p>
+
+    <h3>🏗️ As 3 Camadas da Persistência Web</h3>
+    <div class="conceito-grid">
+      <div class="conceito-card">
+        <span class="tag">Camada 1</span>
+        <h4>🖥️ Interface (DOM)</h4>
+        <p>Campos de digitação (<code>&lt;input&gt;</code>) e visualização em tabela (<code>&lt;tbody&gt;</code>). É a ponta visual com a qual o usuário interage.</p>
+      </div>
+      <div class="conceito-card">
+        <span class="tag">Camada 2</span>
+        <h4>⚡ Estado em RAM</h4>
+        <p>O array de objetos JavaScript (<code>alunos = [{...}]</code>). É rápido e mutável, mas totalmente volátil.</p>
+      </div>
+      <div class="conceito-card">
+        <span class="tag">Camada 3</span>
+        <h4>💾 Persistência (Disco)</h4>
+        <p>O LocalStorage do navegador. Armazena a versão congelada em texto dos dados para restauração futura.</p>
+      </div>
+    </div>
+
+    <h3>🔄 O Ciclo Vital de Persistência</h3>
+    <div class="fluxo">
+      <div class="etapa">Usuário digita<br>no formulário</div>
+      <div class="seta">→</div>
+      <div class="etapa">JS atualiza<br>array em RAM</div>
+      <div class="seta">→</div>
+      <div class="etapa">JSON.stringify()<br>serializa</div>
+      <div class="seta">→</div>
+      <div class="etapa">localStorage<br>grava no disco</div>
+      <div class="seta">→</div>
+      <div class="etapa">F5 restaura via<br>JSON.parse()</div>
+    </div>
+  </section>
+
+  <!-- SEÇÃO 2: A REGRA DE OURO DO JSON -->
+  <section class="card">
+    <h2>🌉 2. A Ponte Serializadora: JSON.stringify e JSON.parse</h2>
+
+    <div class="highlight-box yellow">
+      ⚠️ <strong>A Regra de Ouro:</strong> o LocalStorage <strong>SÓ armazena Strings (texto puro)</strong>! Se você tentar passar um array ou objeto direto para o <code>setItem()</code>, o JavaScript converterá para <code>"[object Object]"</code>, corrompendo irreversivelmente seus dados.
+    </div>
+
+    <p>Para contornar essa restrição técnica, utilizamos as duas funções da biblioteca nativa <code>JSON</code>:</p>
+
+    <table class="tabela">
+      <thead>
+        <tr><th>Método</th><th>Direção</th><th>O que faz na prática</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>JSON.stringify(objeto)</code></td>
+          <td>RAM ➔ Disco</td>
+          <td>Transforma o array/objeto estruturado em uma string de texto serializada pronta para o <code>setItem</code>.</td>
+        </tr>
+        <tr>
+          <td><code>JSON.parse(texto)</code></td>
+          <td>Disco ➔ RAM</td>
+          <td>Reconstrói a string textual do <code>getItem</code>, restaurando-a como array de objetos manipulável em memória.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>💻 As duas funções centrais de sincronia</h3>
+    <pre>// 1. PERSISTIR: Salva a RAM no disco
+function persistir() {
+    localStorage.setItem(CHAVE, JSON.stringify(alunos));
+}
+
+// 2. CARREGAR: Restaura o disco para a RAM ao iniciar a página
+function carregar() {
+    const salvo = localStorage.getItem(CHAVE);
+    if (salvo) {
+        alunos = JSON.parse(salvo);
+        // Recalcula o próximo ID incremental para evitar colisões
+        proximoId = alunos.length ? Math.max(...alunos.map(a =&gt; a.id)) + 1 : 1;
+    }
+    listar();
+}</pre>
+  </section>
+
+  <!-- SEÇÃO 3: ANATOMIA DO CRUD -->
+  <section class="card">
+    <h2>⚙️ 3. A Arquitetura das 4 Operações (CRUD)</h2>
+
+    <p><strong>CRUD</strong> é o acrônimo universal da engenharia de software para as quatro operações fundamentais sobre qualquer base de dados:</p>
+
+    <div class="conceito-grid">
+      <div class="conceito-card">
+        <span class="tag">C — Create</span>
+        <h4>Criar / Inserir</h4>
+        <p>Lê os valores dos inputs e insere um novo objeto no array com <code>alunos.push({ id, ... })</code>.</p>
+      </div>
+      <div class="conceito-card">
+        <span class="tag">R — Read</span>
+        <h4>Ler / Renderizar</h4>
+        <p>Percorre o array com <code>alunos.forEach()</code> e gera dinamicamente as tags <code>&lt;tr&gt;&lt;td&gt;</code> na tabela.</p>
+      </div>
+      <div class="conceito-card">
+        <span class="tag">U — Update</span>
+        <h4>Atualizar / Editar</h4>
+        <p>Localiza o registro com <code>alunos.find()</code> e substitui os dados existentes pelos novos valores digitados.</p>
+      </div>
+      <div class="conceito-card">
+        <span class="tag">D — Delete</span>
+        <h4>Excluir / Deletar</h4>
+        <p>Remove o elemento do array utilizando <code>alunos.filter(a =&gt; a.id !== idAlvo)</code>.</p>
+      </div>
+    </div>
+
+    <h3>🎯 A Técnica do Ponteiro de Edição (idEditando)</h3>
+    <p>Para reaproveitar o mesmo formulário e botão tanto para <strong>cadastrar</strong> quanto para <strong>atualizar</strong>, usamos uma variável de controle chamada <code>idEditando</code>:</p>
+
+    <pre>let idEditando = null; // null = cadastrando novo | número = editando aluno existente
+
+function salvar() {
+    if (idEditando) {
+        // [UPDATE] Se há um ID ativo, atualiza o aluno existente em vez de criar outro
+        const a = alunos.find(x =&gt; x.id === idEditando);
+        a.nome = nome.value;
+        a.email = email.value;
+        idEditando = null; // Libera o modo de edição
+    } else {
+        // [CREATE] Se não há ID, adiciona como novo registro com ID sequencial
+        alunos.push({ id: proximoId++, nome: nome.value, email: email.value });
+    }
+    nome.value = email.value = ""; // Limpa os campos
+    persistir();
+    listar();
+}</pre>
+  </section>
+
+  <!-- SEÇÃO 4: EVOLUÇÃO DE ESQUEMA (ACRÉSCIMO DE CAMPOS) -->
+  <section class="card">
+    <h2>🧩 4. Evolução de Esquema: Adicionando Novos Campos</h2>
+
+    <div class="highlight-box teal">
+      💡 <strong>O Desafio do Desenvolvedor:</strong> sistemas reais mudam com o tempo. Adicionar um novo campo (como <code>idade</code>, <code>telefone</code> ou <code>curso</code>) exige uma intervenção cirúrgica e coordenada em 5 pontos exatos da aplicação, sem quebrar o que já existe.
+    </div>
+
+    <h3>📋 O Checklist Obrigatório de Manutenção</h3>
+    <table class="tabela">
+      <thead>
+        <tr><th>Local</th><th>O que deve ser feito</th><th>Exemplo Prático (Campo Idade)</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1. HTML Form</strong></td>
+          <td>Adicionar o novo <code>&lt;input&gt;</code> para captura</td>
+          <td><code>&lt;input id="idade" type="number" placeholder="Idade"&gt;</code></td>
+        </tr>
+        <tr>
+          <td><strong>2. HTML Tabela</strong></td>
+          <td>Adicionar a nova coluna no <code>&lt;thead&gt;</code></td>
+          <td><code>&lt;tr&gt;&lt;th&gt;ID&lt;/th&gt;...&lt;th&gt;Idade&lt;/th&gt;&lt;th&gt;Ações&lt;/th&gt;&lt;/tr&gt;</code></td>
+        </tr>
+        <tr>
+          <td><strong>3. JS: Create</strong></td>
+          <td>Incluir a propriedade no objeto e na limpeza</td>
+          <td><code>alunos.push({ ..., idade: idade.value });</code> e <code>idade.value = "";</code></td>
+        </tr>
+        <tr>
+          <td><strong>4. JS: Read</strong></td>
+          <td>Renderizar a célula <code>&lt;td&gt;</code> com proteção nula</td>
+          <td><code>&lt;td&gt;${a.idade ?? "-"}&lt;/td&gt;</code></td>
+        </tr>
+        <tr>
+          <td><strong>5. JS: Update</strong></td>
+          <td>Preencher no <code>editar()</code> e atualizar no <code>salvar()</code></td>
+          <td><code>idade.value = a.idade || "";</code> e <code>a.idade = idade.value;</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="highlight-box blue">
+      🛡️ <strong>O Operador Nullish Coalescing (<code>??</code>):</strong> se você cadastrou alunos no passado e agora adicionou a coluna idade, esses alunos antigos têm <code>a.idade === undefined</code>. Se você escrever apenas <code>${a.idade}</code>, a tabela exibirá feiamente o texto <em>"undefined"</em>. Usar <code>${a.idade ?? "-"}</code> faz o JavaScript exibir um traço caso o valor seja nulo ou indefinido!
+    </div>
+  </section>
+
+  <!-- SEÇÃO 5: I/O COM ARQUIVOS JSON -->
+  <section class="card">
+    <h2>📁 5. Entrada e Saída: Backup Físico com Blob e FileReader</h2>
+
+    <p>O LocalStorage fica preso dentro do navegador daquele computador específico. Para transferir dados entre máquinas ou criar cópias de segurança (backups), implementamos rotinas de exportação e importação física de arquivos <code>.json</code>:</p>
+
+    <h3>📤 Exportação de Arquivos com Blob</h3>
+    <pre>function exportar() {
+    // Converte o array da RAM em texto identado legível
+    const texto = JSON.stringify(alunos, null, 2);
+    // Cria um arquivo binário em memória virtual (Blob)
+    const blob = new Blob([texto], { type: "application/json" });
+    // Cria um link temporário invisível e força o download
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "alunos.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(a.href);
+}</pre>
+
+    <h3>📥 Importação Segura com FileReader e Validação</h3>
+    <pre>function importar(evento) {
+    const arquivo = evento.target.files[0];
+    if (!arquivo) return;
+
+    const leitor = new FileReader();
+    leitor.onload = () =&gt; {
+        try {
+            const dados = JSON.parse(leitor.result);
+            // Defesa de integridade: checa se o conteúdo é de fato uma lista
+            if (!Array.isArray(dados)) throw new Error("O arquivo não contém uma lista válida.");
+
+            alunos = dados;
+            proximoId = alunos.length ? Math.max(...alunos.map(a =&gt; a.id)) + 1 : 1;
+
+            persistir();
+            listar();
+            alert("Base de dados importada com sucesso!");
+        } catch (e) {
+            alert("Arquivo corrompido ou inválido: " + e.message);
+        }
+    };
+    leitor.readAsText(arquivo);
+}</pre>
+
+    <div class="highlight-box green">
+      💡 <strong>Vantagem Estrutural:</strong> repare que as funções <code>persistir()</code>, <code>exportar()</code> e <code>importar()</code> <strong>não precisam ser alteradas</strong> quando você adiciona novos campos (como idade). O formato JSON serializa e restaura o objeto integralmente, qualquer que seja a quantidade de propriedades!
+    </div>
+  </section>
+
+  <!-- SEÇÃO 6: TABELA RESUMO -->
+  <section class="card">
+    <h2>📊 6. Tabela Resumo das Operações de Base de Dados</h2>
+    <table class="tabela">
+      <thead>
+        <tr><th>Operação</th><th>Comando Principal</th><th>Alvo</th><th>O que acontece se esquecer?</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Gravar no Disco</td>
+          <td><code>localStorage.setItem(CHAVE, str)</code></td>
+          <td>LocalStorage</td>
+          <td>Dados somem ao recarregar a página (F5).</td>
+        </tr>
+        <tr>
+          <td>Ler do Disco</td>
+          <td><code>localStorage.getItem(CHAVE)</code></td>
+          <td>LocalStorage</td>
+          <td>A aplicação sempre iniciará vazia.</td>
+        </tr>
+        <tr>
+          <td>Serializar</td>
+          <td><code>JSON.stringify(array)</code></td>
+          <td>RAM ➔ String</td>
+          <td>O LocalStorage grava <code>"[object Object]"</code> e corrompe.</td>
+        </tr>
+        <tr>
+          <td>Desserializar</td>
+          <td><code>JSON.parse(string)</code></td>
+          <td>String ➔ RAM</td>
+          <td>O array vira texto puro e não aceita métodos como <code>.map()</code> e <code>.push()</code>.</td>
+        </tr>
+        <tr>
+          <td>Limpar Total</td>
+          <td><code>localStorage.removeItem(CHAVE)</code></td>
+          <td>LocalStorage</td>
+          <td>A chave continua salva ocupando espaço e memória.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- SEÇÃO 7: QUIZ -->
+  <section class="card" id="sec-quiz">
+    <h2>📝 7. Questionário de Fixação (15 Questões)</h2>
+    <p>Responda às questões e clique em "Verificar Respostas" para avaliar seu domínio sobre armazenamento local e manipulação de bases de dados:</p>
+
+    <form id="formQuiz">
+      <!-- Q1 -->
+      <div class="question" id="q1">
+        <div class="question-header">
+          <span class="question-number">1</span>
+          O que acontece com os dados armazenados apenas em variáveis JavaScript (como <code>let alunos = []</code>) quando o usuário atualiza a página (F5)?
+        </div>
+        <div class="options">
+          <div class="option disabled"><input type="radio" name="q1" value="A" disabled=""><label>Os dados são salvos automaticamente no disco rígido</label></div>
+          <div class="option correct disabled"><input type="radio" name="q1" value="B" disabled=""><label>Os dados são perdidos imediatamente, pois a memória RAM é volátil</label></div>
+          <div class="option disabled"><input type="radio" name="q1" value="C" disabled=""><label>Os dados vão para a nuvem do Google</label></div>
+          <div class="option disabled"><input type="radio" name="q1" value="D" disabled=""><label>Os dados ficam congelados na tag &lt;body&gt;</label></div>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="question" id="q2">
+        <div class="question-header">
+          <span class="question-number">2</span>
+          Qual é a restrição de tipo de dado fundamental imposta pelo LocalStorage do navegador?
+        </div>
+        <div class="options">
+          <div class="option disabled"><input type="radio" name="q2" value="A" disabled=""><label>Ele armazena apenas números inteiros</label></div>
+          <div class="option correct disabled"><input type="radio" name="q2" value="B" disabled=""><label>Ele aceita apenas texto puro (Strings)</label></div>
+          <div class="option disabled"><input type="radio" name="q2" value="C" disabled=""><label>Ele só guarda imagens em formato PNG</label></div>
+          <div class="option disabled"><input type="radio" name="q2" value="D" disabled=""><label>Ele armazena objetos nativos binários diretamente</label></div>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="question" id="q3">
+        <div class="question-header">
+          <span class="question-number">3</span>
+          Para que serve o método <code>JSON.stringify()</code> no processo de persistência?
+        </div>
+        <div class="options">
+          <div class="option correct disabled"><input type="radio" name="q3" value="A" disabled=""><label>Converter um array/objeto JavaScript em uma string de texto serializada</label></div>
+          <div class="option disabled"><input type="radio" name="q3" value="B" disabled=""><label>Apagar todas as chaves do LocalStorage</label></div>
+          <div class="option disabled"><input type="radio" name="q3" value="C" disabled=""><label>Abrir a janela de impressão do navegador</label></div>
+          <div class="option disabled"><input type="radio" name="q3" value="D" disabled=""><label>Traduzir os campos do formulário para inglês</label></div>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="question" id="q4">
+        <div class="question-header">
+          <span class="question-number">4</span>
+          O que faz o método <code>JSON.parse()</code> ao inicializar a aplicação com dados salvos?
+        </div>
+        <div class="options">
+          <div class="option disabled"><input type="radio" name="q4" value="A" disabled=""><label>Gera um arquivo PDF para download</label></div>
+          <div class="option correct disabled"><input type="radio" name="q4" value="B" disabled=""><label>Reconstrói a string textual armazenada transformando-a em objeto/array JavaScript em memória</label></div>
+          <div class="option disabled"><input type="radio" name="q4" value="C" disabled=""><label>Ordena os alunos em ordem alfabética automaticamente</label></div>
+          <div class="option disabled"><input type="radio" name="q4" value="D" disabled=""><label>Valida se o endereço de e-mail possui @</label></div>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="question" id="q5">
+        <div class="question-header">
+          <span class="question-number">5</span>
+          Qual é o papel da variável <code>idEditando</code> no fluxo de operações CRUD?
+        </div>
+        <div class="options">
+          <div class="option disabled"><input type="radio" name="q5" value="A" disabled=""><label>Bloquear o acesso de usuários não cadastrados</label></div>
+          <div class="option correct disabled"><input type="radio" name="q5" value="B" disabled=""><label>Atuar como bandeira (flag) para indicar se o botão 'Salvar' deve criar um novo aluno ou atualizar um existente</label></div>
+          <div class="option disabled"><input type="radio" name="q5" value="C" disabled=""><label>Contar quantas vezes a página foi recarregada</label></div>
+          <div class="option disabled"><input type="radio" name="q5" value="D" disabled=""><label>Limpar a memória RAM do computador</label></div>
+        </div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="question" id="q6">
+        <div class="question-header">
+          <span class="question-number">6</span>
+          Ao carregar os alunos salvos, como o script garante que o próximo ID inserido não colidirá com IDs já existentes?
+        </div>
+        <div class="options">
+          <div class="option disabled"><input type="radio" name="q6" value="A" disabled=""><label>Sorteia um número aleatório entre 1 e 1000</label></div>
+          <div class="option correct disabled"><input type="radio" name="q6" value="B" disabled=""><label>Calcula o maior ID existente com <code>Math.max(...)</code> e soma 1</label></div>
+          <div class="option disabled"><input type="radio" name="q6" value="C" disabled=""><label>Zera todos os IDs anteriores a cada inicialização</label></div>
+          <div class="option disabled"><input type="radio" name="q6" value="D" disabled=""><label>Usa sempre o número de caracteres do nome</label></div>
+        </div>
+      </div>
+
+      <!-- Q7 -->
+      <div class="question" id="q7">
+        <div class="question-header">
+          <span class="question-number">7</span>
+          Ao acrescentar um campo 'Idade' ao formulário, qual alteração deve ser feita no cabeçalho da tabela HTML para não desalinhá-la?
+        </div>
+        <div class="options">
+          <div class="option correct disabled"><input type="radio" name="q7" value="A" disabled=""><label>Adicionar uma nova tag <code>&lt;th&gt;Idade&lt;/th&gt;</code> na mesma ordem em que os dados aparecem no corpo</label></div>
+          <div class="option disabled"><input type="radio" name="q7" value="B" disabled=""><label>Excluir a tag &lt;thead&gt; inteira</label></div>
+          <div class="option disabled"><input type="radio" name="q7" value="C" disabled=""><label>Mudar a propriedade border-collapse para separate</label></div>
+          <div class="option disabled"><input type="radio" name="q7" value="D" disabled=""><label>Criar uma segunda tabela separada apenas para idades</label></div>
+        </div>
+      </div>
+
+      <!-- Q8 -->
+      <div class="question" id="q8">
+        <div class="question-header">
+          <span class="question-number">8</span>
+          Qual operador é a melhor prática para exibir um traço ("-") quando um aluno antigo não possui a propriedade idade cadastrada?
+        </div>
+        <div class="options">
+          <div class="option correct disabled"><input type="radio" name="q8" value="A" disabled=""><label>O operador de coalescência nula: <code>${a.idade ?? "-"}</code></label></div>
+          <div class="option disabled"><input type="radio" name="q8" value="B" disabled=""><label>O operador de soma: <code>a.idade + "-"</code></label></div>
+          <div class="option disabled"><input type="radio" name="q8" value="C" disabled=""><label>A função <code>delete a.idade</code></label></div>
+          <div class="option disabled"><input type="radio" name="q8" value="D" disabled=""><label>O comando <code>window.alert(a.idade)</code></label></div>
+        </div>
+      </div>
+
+      <!-- Q9 -->
+      <div class="question" id="q9">
+        <div class="question-header">
+          <span class="question-number">9</span>
+          Qual comando remove um registro específico do array em memória utilizando seu identificador exclusivo?
+        </div>
+        <div class="options">
+          <div class="option disabled"><input type="radio" name="q9" value="A" disabled=""><label><code>alunos.pop()</code></label></div>
+          <div class="option correct disabled"><input type="radio" name="q9" value="B" disabled=""><label><code>alunos = alunos.filter(a =&gt; a.id !== id);</code></label></div>
+          <div class="option disabled"><input type="radio" name="q9" value="C" disabled=""><label><code>alunos.slice(0, 1)</code></label></div>
+          <div class="option disabled"><input type="radio" name="q9" value="D" disabled=""><label><code>localStorage.clear()</code></label></div>
+        </div>
+      </div>
+
+      <!-- Q10 -->
+      <div class="question" id="q10">
+        <div class="question-header">
+          <span class="question-number">10</span>
+          Na rotina de exportação para download físico, para que serve a instrução <code>new Blob([texto], { type: "application/json" })</code>?
+        </div>
+        <div class="options">
+          <div class="option disabled"><input type="radio" name="q10" value="A" disabled=""><label>Para criptografar os dados com senha bancária</label></div>
+          <div class="option correct disabled"><input type="radio" name="q10" value="B" disabled=""><label>Para criar um arquivo binário em memória virtual que o navegador possa baixar como arquivo real</label></div>
+          <div class="option disabled"><input type="radio" name="q10" value="C" disabled=""><label>Para compactar a tabela no formato ZIP</label></div>
+          <div class="option disabled"><input type="radio" name="q10" value="D" disabled=""><label>Para enviar os alunos automaticamente para o servidor remoto</label></div>
+        </div>
+      </div>
+
+      <!-- Q11 -->
+      <div class="question" id="q11">
+        <div class="question-header">
+          <span class="question-number">11</span>
+          Ao importar um arquivo JSON externo com <code>FileReader</code>, por que envolvemos a leitura em um bloco <code>try...catch</code>?
+        </div>
+        <div class="options">
+          <div class="option disabled"><input type="radio" name="q11" value="A" disabled=""><label>Para acelerar a velocidade de processamento da CPU</label></div>
+          <div class="option correct disabled"><input type="radio" name="q11" value="B" disabled=""><label>Para capturar erros de sintaxe ou arquivos corrompidos sem travar a aplicação</label></div>
+          <div class="option disabled"><input type="radio" name="q11" value="C" disabled=""><label>Porque o JavaScript exige try/catch em todas as linhas</label></div>
+          <div class="option disabled"><input type="radio" name="q11" value="D" disabled=""><label>Para impedir que arquivos com mais de 10 linhas sejam lidos</label></div>
+        </div>
+      </div>
+
+      <!-- Q12 -->
+      <div class="question" id="q12">
+        <div class="question-header">
+          <span class="question-number">12</span>
+          O que acontece com a função <code>persistir()</code> quando você adiciona novos atributos (como telefone ou idade) aos alunos?
+        </div>
+        <div class="options">
+          <div class="option disabled"><input type="radio" name="q12" value="A" disabled=""><label>Ela precisa ser completamente reescrita</label></div>
+          <div class="option correct disabled"><input type="radio" name="q12" value="B" disabled=""><label>Ela não precisa de nenhuma alteração, pois o JSON serializa dinamicamente qualquer propriedade existente</label></div>
+          <div class="option disabled"><input type="radio" name="q12" value="C" disabled=""><label>Ela falha e passa a salvar apenas strings vazias</label></div>
+          <div class="option disabled"><input type="radio" name="q12" value="D" disabled=""><label>Exige a criação de uma nova chave no LocalStorage para cada novo campo</label></div>
+        </div>
+      </div>
+
+      <!-- Q13 (V/F) -->
+      <div class="question tf" id="q13">
+        <div class="question-header">
+          <span class="question-number">13</span>
+          O LocalStorage apaga todos os seus dados automaticamente assim que o usuário fecha a aba do navegador.
+        </div>
+        <div class="options tf">
+          <div class="option disabled"><input type="radio" name="q13" value="V" disabled=""><label>✅ Verdadeiro</label></div>
+          <div class="option correct disabled"><input type="radio" name="q13" value="F" disabled=""><label>❌ Falso</label></div>
+        </div>
+      </div>
+
+      <!-- Q14 (V/F) -->
+      <div class="question tf" id="q14">
+        <div class="question-header">
+          <span class="question-number">14</span>
+          A instrução <code>localStorage.removeItem(CHAVE)</code> remove a chave selecionada sem apagar outras chaves de outros sistemas guardadas no mesmo navegador.
+        </div>
+        <div class="options tf">
+          <div class="option correct disabled"><input type="radio" name="q14" value="V" disabled=""><label>✅ Verdadeiro</label></div>
+          <div class="option disabled"><input type="radio" name="q14" value="F" disabled=""><label>❌ Falso</label></div>
+        </div>
+      </div>
+
+      <!-- Q15 (V/F) -->
+      <div class="question tf" id="q15">
+        <div class="question-header">
+          <span class="question-number">15</span>
+          O comando encadeado <code>nome.value = email.value = idade.value = "";</code> limpa os três campos de entrada de forma eficiente após o salvamento.
+        </div>
+        <div class="options tf">
+          <div class="option correct disabled"><input type="radio" name="q15" value="V" disabled=""><label>✅ Verdadeiro</label></div>
+          <div class="option disabled"><input type="radio" name="q15" value="F" disabled=""><label>❌ Falso</label></div>
+        </div>
+      </div>
+
+      <div class="btn-grupo">
+        <button type="button" class="btn" onclick="corrigirQuiz()">✅ Verificar Respostas</button>
+        <button type="button" class="btn btn-secondary" onclick="limparQuiz()">🔄 Limpar Respostas</button>
+      </div>
+    </form>
+
+    <div class="result-box" id="resultadoQuiz" style="display: block;">
+      <h3 style="color:#0f766e;margin-bottom:8px;">📊 Resultado da Avaliação</h3>
+      <div class="score" id="pontuacao">15 / 15</div>
+      <p id="txtPercentual" style="font-weight:bold;color:#042f2e;margin-top:8px;">Aproveitamento: 100%</p>
+    </div>
+  </section>
+
+</div>
+
+<button class="btn-top" onclick="document.getElementById('inicio').scrollIntoView({behavior:'smooth'})">⬆️ Topo</button>
+
+<script>
+const gabarito = {
+  q1:'B', q2:'B', q3:'A', q4:'B', q5:'B',
+  q6:'B', q7:'A', q8:'A', q9:'B', q10:'B',
+  q11:'B', q12:'B', q13:'F', q14:'V', q15:'V'
+};
+
+function corrigirQuiz() {
+  let acertos = 0;
+  for (let id in gabarito) {
+    const sel = document.querySelector('input[name="' + id + '"]:checked');
+    const qDiv = document.getElementById(id);
+    const opts = qDiv.querySelectorAll('.option');
+
+    opts.forEach(function(opt){
+      const r = opt.querySelector('input[type="radio"]');
+      if (r.value === gabarito[id]) opt.classList.add('correct');
+      else if (r.checked) opt.classList.add('wrong');
+      r.disabled = true;
+      opt.classList.add('disabled');
+    });
+
+    if (sel && sel.value === gabarito[id]) acertos++;
+  }
+
+  const perc = Math.round((acertos / 15) * 100);
+  document.getElementById('pontuacao').innerText = acertos + ' / 15';
+  document.getElementById('txtPercentual').innerText = 'Aproveitamento: ' + perc + '%';
+
+  const res = document.getElementById('resultadoQuiz');
+  res.style.display = 'block';
+  res.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function limparQuiz() {
+  document.querySelectorAll('input[type="radio"]').forEach(function(r){
+    r.checked = false; r.disabled = false;
+  });
+  document.querySelectorAll('.option').forEach(function(opt){
+    opt.classList.remove('correct','wrong','disabled');
+  });
+  document.getElementById('resultadoQuiz').style.display = 'none';
+  document.getElementById('sec-quiz').scrollIntoView({behavior:'smooth'});
+}
+
+document.querySelectorAll('.option').forEach(function(opt){
+  opt.addEventListener('click', function(){
+    if (this.classList.contains('disabled')) return;
+    const r = this.querySelector('input[type="radio"]');
+    if (r) r.checked = true;
+  });
+});
+</script>
+
+
+</body></html>
